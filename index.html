@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V3Game App</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial;
+}
+
+body{
+    background:url("background2.jpg") center/cover no-repeat fixed;
+    color:#fff;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:linear-gradient(rgba(0,0,0,0.78), rgba(0,0,0,0.92));
+    z-index:-1;
+}
+
+/* TOP */
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    padding:16px;
+}
+
+.title{color:#00c3ff;font-weight:bold;font-size:20px}
+.wallet{background:rgba(255,255,255,0.08);padding:8px 12px;border-radius:10px;font-size:13px}
+
+/* JACKPOT TOP BAR */
+#jackpotBox{
+    position:fixed;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,0.7);
+    border:1px solid gold;
+    color:gold;
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:bold;
+    z-index:9999;
+    box-shadow:0 0 10px gold;
+}
+
+/* CONTAINER */
+.container{max-width:900px;margin:auto;padding:12px}
+
+/* BUTTON */
+.btn{
+    display:block;
+    width:90%;
+    max-width:360px;
+    margin:12px auto;
+    padding:13px;
+    border-radius:12px;
+    text-align:center;
+    text-decoration:none;
+    color:white;
+    background:linear-gradient(135deg,#ff3c3c,#ff5e5e);
+    font-weight:bold;
+}
+
+/* GAME ROW */
+.game-row{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-top:10px;
+}
+
+.game-card{
+    flex:1;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.08);
+    padding:14px;
+    border-radius:14px;
+    text-align:center;
+    color:#fff;
+    cursor:pointer;
+}
+
+/* SECTION */
+.section{
+    margin-top:20px;
+    text-align:center;
+    font-size:12px;
+    color:#aaa;
+    text-transform:uppercase;
+}
+
+/* TABLE */
+.table{
+    margin-top:10px;
+    background:rgba(255,255,255,0.05);
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.06);
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    padding:12px;
+    font-size:13px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+}
+
+/* NAV */
+.nav{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    display:flex;
+    justify-content:space-around;
+    background:rgba(10,10,10,0.95);
+    padding:10px 0;
+    border-top:1px solid rgba(255,255,255,0.1);
+}
+
+.nav div{
+    font-size:12px;
+    text-align:center;
+    color:#ccc;
+    cursor:pointer;
+}
+
+/* TELEGRAM */
+.tg{
+    position:fixed;
+    bottom:90px;
+    right:15px;
+    z-index:9999;
+}
+
+.tg a{
+    display:block;
+    margin-top:8px;
+    background:#0088cc;
+    color:#fff;
+    padding:9px 12px;
+    border-radius:50px;
+    font-size:11px;
+    text-decoration:none;
+    text-align:center;
+}
+
+/* SLOT */
+#slotLoader{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.92);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:10000;
+}
+
+.slotBox{text-align:center}
+
+.reels{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    margin-bottom:10px;
+}
+
+.reel{
+    width:60px;
+    height:60px;
+    font-size:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,255,255,0.08);
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.15);
+}
+
+/* JACKPOT EFFECT */
+#jackpotOverlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:9999;
+}
+
+.particle{
+    position:absolute;
+    width:8px;
+    height:8px;
+    background:gold;
+    border-radius:50%;
+    animation:explode 1s ease-out forwards;
+    box-shadow:0 0 10px gold;
+}
+
+@keyframes explode{
+    0%{transform:translate(0,0) scale(1);opacity:1;}
+    100%{transform:translate(var(--x), var(--y)) scale(0);opacity:0;}
+}
+
+/* WINNERS */
+.ticker{
+    margin:15px auto;
+    max-width:900px;
+    background:rgba(255,255,255,0.05);
+    border-radius:12px;
+    height:120px;
+    overflow:hidden;
+}
+
+#tickerList{
+    display:flex;
+    flex-direction:column;
+}
+
+.ticker-item{
+    padding:8px 12px;
+    font-size:12px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    color:#ddd;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 💰 MOVING JACKPOT -->
+<div id="jackpotBox">💰 JACKPOT: ₹<span id="jackpotValue">0</span></div>
+
+<div class="topbar">
+<div class="title">V3Game</div>
+<div class="wallet">₹0.00</div>
+</div>
+
+<div class="container">
+
+<a class="btn" onclick="openSlot()">Register Now</a>
+
+<div class="section">Games</div>
+
+<div class="game-row">
+<div class="game-card" onclick="openSlot()">🎰 Slot</div>
+<div class="game-card" onclick="openSlot()">🎯 Lottery</div>
+<div class="game-card" onclick="openSlot()">⚽ Sports</div>
+</div>
+
+<div class="section">Live Win Rates</div>
+
+<div class="table">
+<div class="row"><span>🎰 Slot</span><span id="slotRate">42%</span></div>
+<div class="row"><span>🎯 Lottery</span><span id="lotteryRate">35%</span></div>
+<div class="row"><span>⚽ Sports</span><span id="sportsRate">55%</span></div>
+</div>
+
+<div class="section">Players Winning Now</div>
+
+<div class="ticker">
+<div id="tickerList"></div>
+</div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+<div onclick="openSlot()">🏠 Home</div>
+<div onclick="openSlot()">🎮 Games</div>
+<div onclick="openSlot()">💰 Wallet</div>
+<div onclick="openSlot()">📊 Support</div>
+</div>
+
+<!-- TELEGRAM -->
+<div class="tg">
+<a href="https://t.me/v3gameoffcial" target="_blank">📢 Channel</a>
+<a href="https://t.me/v3vip1minwingo" target="_blank">📊 Predictions</a>
+</div>
+
+<!-- SLOT -->
+<div id="slotLoader">
+    <div class="slotBox">
+        <div class="reels">
+            <div class="reel" id="r1">🍒</div>
+            <div class="reel" id="r2">🔔</div>
+            <div class="reel" id="r3">💎</div>
+        </div>
+        <p>Spinning...</p>
+    </div>
+</div>
+
+<div id="jackpotOverlay"></div>
+
+<script>
+
+const regLink="https://www.v3gamewup9.com/#/pages/login/register?invitationCode=0365133703";
+
+const symbols=["🍒","🔔","💎","7️⃣","🍋","⭐","🍀","💰"];
+
+/* SLOT */
+function spinReel(id,speed){
+    return setInterval(()=>{
+        document.getElementById(id).innerText=
+        symbols[Math.floor(Math.random()*symbols.length)];
+    },speed);
+}
+
+/* JACKPOT EXPLOSION */
+function triggerJackpot(){
+    const overlay=document.getElementById("jackpotOverlay");
+
+    for(let i=0;i<40;i++){
+        const p=document.createElement("div");
+        p.className="particle";
+
+        const x=(Math.random()*600-300)+"px";
+        const y=(Math.random()*600-300)+"px";
+
+        p.style.setProperty("--x",x);
+        p.style.setProperty("--y",y);
+
+        p.style.left=(window.innerWidth/2)+"px";
+        p.style.top=(window.innerHeight/2)+"px";
+
+        overlay.appendChild(p);
+        setTimeout(()=>p.remove(),1000);
+    }
+}
+
+/* SLOT SYSTEM */
+function openSlot(){
+    const loader=document.getElementById("slotLoader");
+    loader.style.display="flex";
+
+    const r1=spinReel("r1",80);
+    const r2=spinReel("r2",100);
+    const r3=spinReel("r3",120);
+
+    setTimeout(()=>clearInterval(r1),1200);
+    setTimeout(()=>clearInterval(r2),1600);
+    setTimeout(()=>clearInterval(r3),2000);
+
+    let f1,f2,f3;
+
+    setTimeout(()=>{
+        f1=symbols[Math.floor(Math.random()*symbols.length)];
+        f2=symbols[Math.floor(Math.random()*symbols.length)];
+        f3=symbols[Math.floor(Math.random()*symbols.length)];
+
+        document.getElementById("r1").innerText=f1;
+        document.getElementById("r2").innerText=f2;
+        document.getElementById("r3").innerText=f3;
+
+        if(f1===f2 && f2===f3){
+            triggerJackpot();
+        }
+
+    },2000);
+
+    setTimeout(()=>{
+        window.location.href=regLink;
+    },2800);
+}
+
+/* LIVE WIN RATE */
+let slot=42, lottery=35, sports=55;
+
+setInterval(()=>{
+slot+=Math.random()*2-1;
+lottery+=Math.random()*2-1;
+sports+=Math.random()*2-1;
+
+document.getElementById("slotRate").innerText=slot.toFixed(0)+"%";
+document.getElementById("lotteryRate").innerText=lottery.toFixed(0)+"%";
+document.getElementById("sportsRate").innerText=sports.toFixed(0)+"%";
+},3000);
+
+/* JACKPOT MONEY COUNTER */
+let jackpot=125000;
+
+function updateJackpot(){
+jackpot += Math.floor(Math.random()*5000+1000);
+
+if(Math.random()<0.01){
+jackpot = Math.floor(Math.random()*80000+100000);
+}
+
+document.getElementById("jackpotValue").innerText =
+jackpot.toLocaleString("en-IN");
+}
+
+setInterval(updateJackpot,1200);
+
+/* WINNERS */
+const users=["036***703","987***210","812***789","564***901","771***345"];
+const games=["Slot","Lottery","Sports"];
+
+function addWinner(){
+    const user=users[Math.floor(Math.random()*users.length)];
+    const game=games[Math.floor(Math.random()*games.length)];
+    const amount=Math.floor(Math.random()*9000+500);
+
+    const div=document.createElement("div");
+    div.className="ticker-item";
+    div.innerText=`${user} won ₹${amount} on ${game}`;
+
+    document.getElementById("tickerList").prepend(div);
+
+    if(document.getElementById("tickerList").children.length>10){
+        document.getElementById("tickerList").removeChild(
+            document.getElementById("tickerList").lastChild
+        );
+    }
+}
+
+setInterval(addWinner,2000);
+
+</script>
+
+</body>
+</html>
